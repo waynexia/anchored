@@ -1,5 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
+#[doc(hidden)]
 pub auto trait Unanchored {}
 
 pub struct Anchored<T> {

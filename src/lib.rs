@@ -3,4 +3,5 @@
 
 mod anchored;
 
-pub use anchored::Anchored;
+pub use anchored::{Anchored, Unanchored};
+pub use anchored_macros::unanchored;
