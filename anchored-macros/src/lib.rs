@@ -81,11 +81,11 @@ pub fn unanchored(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Extract parameter `Ident`s from `FnArg`, and tell if this contains `self`.
 ///
 /// E.g.,
-/// ```rust, no_run
+/// ```rust, ignore
 /// fn(ident_1: Type1, ident_2: Type2)
 /// ```
 /// returns
-/// ```rust, no_run
+/// ```rust, ignore
 /// vec![Ident("ident_1"), Ident("ident_2")]
 /// ```
 fn extract_params(inputs: &Punctuated<FnArg, Comma>) -> (Vec<Ident>, bool) {
@@ -118,11 +118,11 @@ fn extract_params(inputs: &Punctuated<FnArg, Comma>) -> (Vec<Ident>, bool) {
 /// Add `Unanchored` to type params in "where" clause.
 ///
 /// E.g.,
-/// ```rust, no_run
+/// ```rust, ignore
 /// -> where T: Sync,
 /// ```
 /// to
-/// ```rust, no_run
+/// ```rust, ignore
 /// -> where T: Sync + Unanchored,
 /// ```
 fn rewrite_where(where_clause: Option<WhereClause>) -> Option<WhereClause> {
