@@ -52,23 +52,33 @@ pub fn unanchored(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let unanchored_ident = format_ident!("__assert_unanchored_{}", ident);
 
-    let func_params = extract_params(&inputs);
+    let (func_params, has_self) = extract_params(&inputs);
     let where_clause = rewrite_where(where_clause);
 
-    let assert_fn: TokenStream = quote!(
-        #unsafety #abi fn #unanchored_ident<#generic_param> (#inputs) #where_clause{
-            let future = #ident(#(#func_params),*);
-            fn assert<UnanchoredFutureType: anchored::Unanchored>(_: UnanchoredFutureType) {}
-            assert(future);
-        }
-    )
+    let assert_fn: TokenStream = if has_self {
+        quote!(
+            #unsafety #abi fn #unanchored_ident<#generic_param> (#inputs) #where_clause{
+                let future = self.#ident(#(#func_params),*);
+                fn assert<UnanchoredFutureType: anchored::Unanchored>(_: UnanchoredFutureType) {}
+                assert(future);
+            }
+        )
+    } else {
+        quote!(
+            #unsafety #abi fn #unanchored_ident<#generic_param> (#inputs) #where_clause{
+                let future = #ident(#(#func_params),*);
+                fn assert<UnanchoredFutureType: anchored::Unanchored>(_: UnanchoredFutureType) {}
+                assert(future);
+            }
+        )
+    }
     .into();
 
     result.extend(assert_fn);
     result
 }
 
-/// Extract parameter `Ident`s from `FnArg`.
+/// Extract parameter `Ident`s from `FnArg`, and tell if this contains `self`.
 ///
 /// E.g.,
 /// ```rust, no_run
@@ -78,18 +88,31 @@ pub fn unanchored(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```rust, no_run
 /// vec![Ident("ident_1"), Ident("ident_2")]
 /// ```
-fn extract_params(inputs: &Punctuated<FnArg, Comma>) -> Vec<Ident> {
-    inputs
+fn extract_params(inputs: &Punctuated<FnArg, Comma>) -> (Vec<Ident>, bool) {
+    let mut has_self = false;
+    let idents: Vec<Ident> = inputs
         .iter()
-        .map(|arg| {
-            if let FnArg::Typed(pat_type) = arg {
+        .filter_map(|arg| match arg {
+            FnArg::Receiver(_) => {
+                has_self = true;
+                None
+            }
+            FnArg::Typed(pat_type) => {
                 if let Pat::Ident(pat_ident) = pat_type.pat.as_ref() {
-                    return pat_ident.ident.clone();
+                    if pat_ident.ident == "self" {
+                        has_self = true;
+                        None
+                    } else {
+                        Some(pat_ident.ident.clone())
+                    }
+                } else {
+                    None
                 }
             }
-            panic!()
         })
-        .collect()
+        .collect();
+
+    (idents, has_self)
 }
 
 /// Add `Unanchored` to type params in "where" clause.
