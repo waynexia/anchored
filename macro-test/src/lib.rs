@@ -16,6 +16,17 @@ async fn with_param(input: usize) -> usize {
 
 #[unanchored]
 #[allow(clippy::needless_lifetimes)]
-async fn with_lifetime<'a>(input: &'a usize) -> &'a usize {
+async fn with_lifetime<'a, 'b>(input: &'a usize) -> &'b usize
+where
+    'a: 'b,
+{
+    input
+}
+
+#[unanchored]
+async fn with_type_param<T>(input: T) -> T
+where
+    T: Send + Sync + 'static,
+{
     input
 }
