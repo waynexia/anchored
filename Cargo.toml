@@ -8,4 +8,4 @@ authors = ["Ruihang Xia <waynestxia@gmail.com>"]
 anchored-macros = { version = "*", path = "./anchored-macros/" }
 
 [workspace]
-members = ["anchored-macros"]
+members = ["anchored-macros", "macro-test"]

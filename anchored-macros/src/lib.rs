@@ -7,7 +7,7 @@ use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, FnArg, Ident, ItemFn, Pat};
+use syn::{parse_macro_input, FnArg, Generics, Ident, ItemFn, Pat};
 
 #[proc_macro_attribute]
 #[proc_macro_error]
@@ -37,18 +37,23 @@ pub fn unanchored(attr: TokenStream, item: TokenStream) -> TokenStream {
         unsafety,
         abi,
         ident,
-        generics: _generics,
+        generics:
+            Generics {
+                params: generic_param,
+                where_clause,
+                ..
+            },
         ..
     } = sig;
 
     let unanchored_ident = format_ident!("__assert_unanchored_{}", ident);
 
-    let params = extract_params(&inputs);
+    let func_params = extract_params(&inputs);
 
     let assert_fn: TokenStream = quote!(
-        #unsafety #abi fn #unanchored_ident (#inputs){
-            let future = #ident(#(#params),*);
-            fn assert<T: Unanchored>(_: T) {}
+        #unsafety #abi fn #unanchored_ident<#generic_param> (#inputs) #where_clause{
+            let future = #ident(#(#func_params),*);
+            fn assert<UnanchoredFutureType: anchored::Unanchored>(_: UnanchoredFutureType) {}
             assert(future);
         }
     )
