@@ -3,6 +3,9 @@ name = "anchored-macros"
 version = "0.1.0"
 edition = "2018"
 authors = ["Ruihang Xia <waynestxia@gmail.com>"]
+license = "Apache-2.0"
+description = "Anchored things can't cross the .await point"
+repository = "https://github.com/waynexia/anchored"
 
 [lib]
 proc-macro = true

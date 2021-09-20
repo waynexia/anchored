@@ -8,7 +8,7 @@ description = "Anchored things can't cross the .await point"
 repository = "https://github.com/waynexia/anchored"
 
 [dependencies]
-anchored-macros = { version = "*", path = "./anchored-macros/" }
+anchored-macros = { path = "anchored-macros", version = "0.1.0" }
 
 [workspace]
 members = ["anchored-macros", "macro-test"]

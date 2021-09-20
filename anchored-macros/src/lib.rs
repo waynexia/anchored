@@ -1,3 +1,4 @@
+//! `unanchored` attribute macro's implementation. **Consider use the `anchored` crate instead**.
 #![feature(proc_macro_quote)]
 
 #[macro_use]
