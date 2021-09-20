@@ -3,6 +3,7 @@ use std::ops::{Deref, DerefMut};
 #[doc(hidden)]
 pub auto trait Unanchored {}
 
+/// A wrapper struct which doesn't implements the `Unanchored` auto trait.
 pub struct Anchored<T> {
     data: T,
 }
