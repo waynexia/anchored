@@ -13,7 +13,8 @@ use syn::{
     WherePredicate,
 };
 
-/// Add this to async function / method to ensure no `Anchored` struct is captured into async generator's state.
+/// Add this to async function / method to ensure no `Anchored` struct is captured into async
+/// generator's state.
 #[proc_macro_attribute]
 #[proc_macro_error]
 pub fn unanchored(attr: TokenStream, item: TokenStream) -> TokenStream {
